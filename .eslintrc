@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "next",
+    "next/core-web-vitals",
+    "prettier",
+    "plugin:jsx-a11y/recommended"
+  ],
+  "rules": {
+    "no-console": "error",
+    "jsx-a11y/anchor-is-valid": "off"
+  },
+  "plugins": ["jsx-a11y"]
+}
