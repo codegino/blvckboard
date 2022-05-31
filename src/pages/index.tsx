@@ -43,6 +43,8 @@ const IndexPage = () => {
   const [currentAddress, setCurrentAddress] = addressState;
   const [selectedCell, setSelectedCell] = selectedCellState;
 
+  const [blocksCount, setBlocksCount] = useState(0);
+
   useEffect(() => {
     fetch('/api/blvckboard')
       .then(res => res.json())
@@ -60,6 +62,22 @@ const IndexPage = () => {
         });
       });
   }, []);
+
+  useEffect(() => {
+    if (currentAddress) {
+      startTransition(() => {
+        const blocksTaken = board.reduce((acc, row) => {
+          const count = row.filter(
+            cell => cell.owner === currentAddress,
+          ).length;
+
+          return acc + count;
+        }, 0);
+
+        setBlocksCount(blocksTaken);
+      });
+    }
+  }, [board, currentAddress]);
 
   const connectWallet = useCallback(async () => {
     try {
@@ -158,12 +176,22 @@ const IndexPage = () => {
     >
       <Layout title="The Blvckboard">
         <main className="flex flex-col items-center">
-          <h1 className="text-3xl font-bold underline text-center mb-4">
+          <h1 className="text-3xl font-bold underline text-center my-4">
             Welcome to the Blvck Board
           </h1>
           {selectedCell && <CellForm onCellUpdate={handleUpdateCell} />}
-          {currentAddress && <div>Connected Address: {currentAddress}</div>}
+          {currentAddress && (
+            <div>
+              Connected Address: {currentAddress.substring(0, 5)}...
+              {currentAddress.substring(38, 42)}
+            </div>
+          )}
           {currentAddress && <div>Number of Blvcks: {nftCount}</div>}
+          {currentAddress && (
+            <div>
+              Blocks Taken: {blocksCount}/{nftCount * 2}
+            </div>
+          )}
           <h2>Click on a cell to view/modify content</h2>
 
           {!walletConnected && (
@@ -172,7 +200,7 @@ const IndexPage = () => {
 
           <div
             className={
-              'flex flex-col bg-[#323232] box-border border-4 border-gray-600'
+              'flex flex-col bg-[#323232] box-border border-4 border-gray-600 mt-4'
             }
           >
             {board.map((row, y) => (
@@ -229,7 +257,7 @@ const Cell = React.memo(
           'flex justify-center items-center',
           'gap-[4px] min-h-[1rem] min-w-[1rem] w-4 h-4 border border-[#110011] cursor-pointer',
           {
-            'border border-green-500': address === owner,
+            'border border-green-500': owner && address === owner,
           },
         )}
         style={{
