@@ -9,10 +9,13 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^1.35.3",
     "clsx": "^1.1.1",
+    "ethers": "^5.6.8",
     "next": "12.1.6",
     "react": "18.1.0",
-    "react-dom": "18.1.0"
+    "react-dom": "18.1.0",
+    "web3modal": "^1.9.7"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "3.2.0",
