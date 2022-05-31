@@ -3,7 +3,7 @@ import {PhotoshopPicker} from 'react-color';
 import {useBlvckBoardState} from './cell-hook';
 
 const CellForm = ({onCellUpdate}) => {
-  const [blockPickerColor, setBlockPickerColor] = useState('transparent');
+  const [blockPickerColor, setBlockPickerColor] = useState('#110011');
   const [comment, setComment] = useState('');
   const [symbol, setSymbol] = useState('');
   const [isColorPickerVisible, setColorPickerVisible] = useState(false);

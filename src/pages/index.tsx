@@ -134,31 +134,34 @@ const IndexPage = () => {
       }}
     >
       <Layout title="The Blvckboard">
-        <h1 className="text-3xl font-bold underline text-center mb-4">
-          Welcome to the Blvck Board
-        </h1>
-        {selectedCell && <CellForm onCellUpdate={handleUpdateCell} />}
-        {currentAddress && <div>Connected Address: {currentAddress}</div>}
+        <main className="flex flex-col items-center">
+          <h1 className="text-3xl font-bold underline text-center mb-4">
+            Welcome to the Blvck Board
+          </h1>
+          {selectedCell && <CellForm onCellUpdate={handleUpdateCell} />}
+          {currentAddress && <div>Connected Address: {currentAddress}</div>}
+          <h2>Click on a cell to view/modify content</h2>
 
-        {!walletConnected && (
-          <button onClick={connectWallet}>Connect Wallet</button>
-        )}
+          {!walletConnected && (
+            <button onClick={connectWallet}>Connect Wallet</button>
+          )}
 
-        <div className="flex flex-col p-2">
-          {board.map((row, y) => (
-            <div key={y} className="flex flex-row">
-              {row.map((cell, x) => (
-                <Cell
-                  x={x}
-                  y={y}
-                  color={cell.color}
-                  key={`${x}-${y}`}
-                  symbol={cell.symbol}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
+          <div className="flex flex-col p-2 bg-[#323232]">
+            {board.map((row, y) => (
+              <div key={y} className="flex flex-row">
+                {row.map((cell, x) => (
+                  <Cell
+                    x={x}
+                    y={y}
+                    color={cell.color}
+                    key={`${x}-${y}`}
+                    symbol={cell.symbol}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        </main>
       </Layout>
     </BlvckBoardProvider>
   );
@@ -193,7 +196,7 @@ const Cell = React.memo(
       <div
         className={clsx(
           'flex justify-center items-center',
-          'gap-[4px] min-h-[1rem] min-w-[1rem] w-4 h-4 border border-black cursor-pointer',
+          'gap-[4px] min-h-[1rem] min-w-[1rem] w-4 h-4 border border-[#110011] cursor-pointer',
         )}
         style={{
           backgroundColor: color,
