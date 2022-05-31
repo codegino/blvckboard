@@ -3,7 +3,9 @@ import {supabase} from '../../../libs/supabase-client';
 
 const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const {data} = await supabase.from('blvckboard').select('*');
+    const {data} = await supabase
+      .from('blvckboard')
+      .select('coordinate,color,symbol,owner');
 
     res.status(200).json(data);
   } catch (err: any) {

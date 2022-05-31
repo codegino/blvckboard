@@ -4,6 +4,7 @@ import type {Dispatch, FunctionComponent, SetStateAction} from 'react';
 type ActionType = {
   selectedCell: [CellProps, Dispatch<SetStateAction<CellProps>>];
   address: [string, Dispatch<SetStateAction<string>>];
+  nftCount: [number, Dispatch<SetStateAction<number>>];
 };
 
 export const BlvckBoardContext = createContext<ActionType>(
@@ -30,9 +31,11 @@ export const useBlvckBoardState = () => {
   const {
     selectedCell: [selectedCell, setSelectedCell],
     address: [address, setAddress],
+    nftCount: [nftCount, setNftCount],
   } = useContext(BlvckBoardContext) as {
     selectedCell: [CellProps, Dispatch<SetStateAction<CellProps>>];
     address: [string, Dispatch<SetStateAction<string>>];
+    nftCount: [number, Dispatch<SetStateAction<number>>];
   };
 
   return {
@@ -40,5 +43,7 @@ export const useBlvckBoardState = () => {
     setSelectedCell,
     address,
     setAddress,
+    nftCount,
+    setNftCount,
   };
 };

@@ -13,7 +13,7 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
 
     const {data} = await supabase
       .from('blvckboard')
-      .select('*')
+      .select('coordinate,color,symbol,owner')
       .eq('coordinate', `${x},${y}`)
       .single();
 

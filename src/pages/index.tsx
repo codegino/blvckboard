@@ -1,5 +1,4 @@
 import React, {
-  memo,
   useCallback,
   useEffect,
   useRef,
@@ -8,7 +7,7 @@ import React, {
 } from 'react';
 import {JsonRpcSigner} from '@ethersproject/providers';
 import clsx from 'clsx';
-import {Contract, providers, utils} from 'ethers';
+import {Contract, providers} from 'ethers';
 import Web3Modal from 'web3modal';
 import CellForm from '../components/CellForm';
 import Layout from '../components/Layout';
@@ -24,18 +23,22 @@ const defaultBoard = () =>
     Array.from({length: 100}, () => ({
       color: null,
       symbol: null,
+      owner: null,
     })),
   );
 
 const IndexPage = () => {
   const [board, setBoard] = useState(() => defaultBoard());
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [walletConnected, setWalletConnected] = useState(false);
 
   const web3ModalRef = useRef<Web3Modal>();
 
   const selectedCellState = useState<CellProps>(null);
   const addressState = useState<string>(null);
+  const nftCountState = useState<number>(0);
+
+  const [nftCount, setNftCount] = nftCountState;
 
   const [currentAddress, setCurrentAddress] = addressState;
   const [selectedCell, setSelectedCell] = selectedCellState;
@@ -51,6 +54,7 @@ const IndexPage = () => {
 
             newBoard[y][x].color = element.color;
             newBoard[y][x].symbol = element.symbol;
+            newBoard[y][x].owner = element.owner;
           });
           setBoard(newBoard);
         });
@@ -121,16 +125,35 @@ const IndexPage = () => {
       const newBoard = [...board];
       newBoard[y][x].color = color;
       newBoard[y][x].symbol = symbol;
+      newBoard[y][x].owner = currentAddress;
+
       setBoard(newBoard);
     });
     setSelectedCell(null);
   };
+
+  useEffect(() => {
+    walletConnected &&
+      (async () => {
+        try {
+          const provider = await getProviderOrSigner();
+          const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
+
+          const balance = await nftContract.balanceOf(currentAddress);
+
+          setNftCount(Number.parseInt(balance._hex, 16));
+        } catch (err) {
+          alert('Unable to fetch NFT balance');
+        }
+      })();
+  }, [currentAddress, setNftCount, walletConnected]);
 
   return (
     <BlvckBoardProvider
       value={{
         selectedCell: selectedCellState,
         address: addressState,
+        nftCount: nftCountState,
       }}
     >
       <Layout title="The Blvckboard">
@@ -140,13 +163,18 @@ const IndexPage = () => {
           </h1>
           {selectedCell && <CellForm onCellUpdate={handleUpdateCell} />}
           {currentAddress && <div>Connected Address: {currentAddress}</div>}
+          {currentAddress && <div>Number of Blvcks: {nftCount}</div>}
           <h2>Click on a cell to view/modify content</h2>
 
           {!walletConnected && (
             <button onClick={connectWallet}>Connect Wallet</button>
           )}
 
-          <div className="flex flex-col p-2 bg-[#323232]">
+          <div
+            className={
+              'flex flex-col bg-[#323232] box-border border-4 border-gray-600'
+            }
+          >
             {board.map((row, y) => (
               <div key={y} className="flex flex-row">
                 {row.map((cell, x) => (
@@ -156,6 +184,7 @@ const IndexPage = () => {
                     color={cell.color}
                     key={`${x}-${y}`}
                     symbol={cell.symbol}
+                    owner={cell.owner}
                   />
                 ))}
               </div>
@@ -173,22 +202,24 @@ const Cell = React.memo(
     x,
     y,
     symbol,
+    owner,
   }: {
     x: number;
     y: number;
     color: string;
     symbol: string;
+    owner: string;
   }) => {
-    const {setSelectedCell, address} = useBlvckBoardState();
+    const {setSelectedCell, address, nftCount} = useBlvckBoardState();
 
     const handleOnDoubleClick = () => {
-      if (address) {
+      if (address && nftCount > 0) {
         setSelectedCell({
           x,
           y,
         });
       } else {
-        alert('Please connect to a wallet');
+        alert('Connected wallet must have at least 1 Blvck');
       }
     };
 
@@ -197,6 +228,9 @@ const Cell = React.memo(
         className={clsx(
           'flex justify-center items-center',
           'gap-[4px] min-h-[1rem] min-w-[1rem] w-4 h-4 border border-[#110011] cursor-pointer',
+          {
+            'border border-green-500': address === owner,
+          },
         )}
         style={{
           backgroundColor: color,

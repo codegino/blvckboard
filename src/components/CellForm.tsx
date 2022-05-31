@@ -11,6 +11,7 @@ const CellForm = ({onCellUpdate}) => {
     selectedCell: {x, y},
     setSelectedCell,
     address,
+    nftCount,
   } = useBlvckBoardState();
   const [cellInfo, setCellInfo] = useState<{
     comment: string;
@@ -39,6 +40,7 @@ const CellForm = ({onCellUpdate}) => {
         comment,
         address,
         symbol,
+        nftCount,
       };
 
       fetch('/api/blvckboard/update', {
@@ -62,6 +64,7 @@ const CellForm = ({onCellUpdate}) => {
       address,
       blockPickerColor,
       comment,
+      nftCount,
       onCellUpdate,
       setSelectedCell,
       symbol,
@@ -100,6 +103,7 @@ const CellForm = ({onCellUpdate}) => {
             <input
               id="comment"
               className="border border-gray-500 px-4 rounded-sm"
+              placeholder="Any text"
               value={comment}
               onChange={e => setComment(e.target.value)}
             />
@@ -109,7 +113,8 @@ const CellForm = ({onCellUpdate}) => {
 
             <input
               id="symbol"
-              className="border border-gray-500 px-2 rounded-sm w-10"
+              className="border border-gray-500 px-2 rounded-sm"
+              placeholder="1-character symbol"
               value={symbol}
               maxLength={1}
               onChange={e => setSymbol(e.target.value)}
