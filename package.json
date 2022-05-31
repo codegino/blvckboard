@@ -9,6 +9,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^1.35.3",
     "clsx": "^1.1.1",
     "next": "12.1.6",
     "react": "18.1.0",
