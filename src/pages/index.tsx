@@ -10,18 +10,20 @@ import {JsonRpcSigner} from '@ethersproject/providers';
 import clsx from 'clsx';
 import {Contract, providers, utils} from 'ethers';
 import Web3Modal from 'web3modal';
+import CellForm from '../components/CellForm';
 import Layout from '../components/Layout';
+import {
+  BlvckBoardProvider,
+  CellProps,
+  useBlvckBoardState,
+} from '../components/cell-hook';
 import {abi, NFT_CONTRACT_ADDRESS} from '../constants';
-
-export function generateRandomColor(): string {
-  // Only generate light colors to ensure text is easy to read
-  return `hsl(${Math.random() * 360}, 100%, 50%)`;
-}
 
 const defaultBoard = () =>
   Array.from({length: 50}, () =>
     Array.from({length: 100}, () => ({
       color: null,
+      symbol: null,
     })),
   );
 
@@ -29,9 +31,14 @@ const IndexPage = () => {
   const [board, setBoard] = useState(() => defaultBoard());
   const [isPending, startTransition] = useTransition();
   const [walletConnected, setWalletConnected] = useState(false);
-  const [currentAddress, setCurrentAddress] = useState(null);
 
   const web3ModalRef = useRef<Web3Modal>();
+
+  const selectedCellState = useState<CellProps>(null);
+  const addressState = useState<string>(null);
+
+  const [currentAddress, setCurrentAddress] = addressState;
+  const [selectedCell, setSelectedCell] = selectedCellState;
 
   useEffect(() => {
     fetch('/api/blvckboard')
@@ -43,6 +50,7 @@ const IndexPage = () => {
             const [x, y] = element.coordinate.split(',');
 
             newBoard[y][x].color = element.color;
+            newBoard[y][x].symbol = element.symbol;
           });
           setBoard(newBoard);
         });
@@ -65,7 +73,7 @@ const IndexPage = () => {
     } catch (err) {
       alert(err);
     }
-  }, []);
+  }, [setCurrentAddress]);
 
   useEffect(() => {
     // if wallet is not connected, create a new instance of Web3Modal and connect the MetaMask wallet
@@ -103,42 +111,56 @@ const IndexPage = () => {
     return web3Provider;
   };
 
-  const handleUpdateCell = (x: number, y: number, color: string) => {
+  const handleUpdateCell = (
+    x: number,
+    y: number,
+    color: string,
+    symbol: string,
+  ) => {
     startTransition(() => {
       const newBoard = [...board];
       newBoard[y][x].color = color;
+      newBoard[y][x].symbol = symbol;
       setBoard(newBoard);
     });
+    setSelectedCell(null);
   };
 
   return (
-    <Layout title="The Blvckboard">
-      <h1 className="text-3xl font-bold underline text-center mb-4">
-        Welcome to the Blvck Board
-      </h1>
-      {currentAddress && <div>Connected Address: {currentAddress}</div>}
+    <BlvckBoardProvider
+      value={{
+        selectedCell: selectedCellState,
+        address: addressState,
+      }}
+    >
+      <Layout title="The Blvckboard">
+        <h1 className="text-3xl font-bold underline text-center mb-4">
+          Welcome to the Blvck Board
+        </h1>
+        {selectedCell && <CellForm onCellUpdate={handleUpdateCell} />}
+        {currentAddress && <div>Connected Address: {currentAddress}</div>}
 
-      {!walletConnected && (
-        <button onClick={connectWallet}>Connect Wallet</button>
-      )}
+        {!walletConnected && (
+          <button onClick={connectWallet}>Connect Wallet</button>
+        )}
 
-      <div className="flex flex-col p-2">
-        {board.map((row, y) => (
-          <div key={y} className="flex flex-row">
-            {row.map((cell, x) => (
-              <Cell
-                x={x}
-                y={y}
-                color={cell.color}
-                key={`${x}-${y}`}
-                onCellUpdate={handleUpdateCell}
-                address={currentAddress}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-    </Layout>
+        <div className="flex flex-col p-2">
+          {board.map((row, y) => (
+            <div key={y} className="flex flex-row">
+              {row.map((cell, x) => (
+                <Cell
+                  x={x}
+                  y={y}
+                  color={cell.color}
+                  key={`${x}-${y}`}
+                  symbol={cell.symbol}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      </Layout>
+    </BlvckBoardProvider>
   );
 };
 
@@ -147,50 +169,39 @@ const Cell = React.memo(
     color,
     x,
     y,
-    onCellUpdate,
-    address,
+    symbol,
   }: {
     x: number;
     y: number;
     color: string;
-    address: string;
-    onCellUpdate: (x: number, y: number, color: string) => void;
+    symbol: string;
   }) => {
-    const handleOnDoubleClick = () => {
-      const body = {
-        coordinate: `${x},${y}`,
-        color: generateRandomColor(),
-        address,
-      };
+    const {setSelectedCell, address} = useBlvckBoardState();
 
-      fetch('/api/blvckboard/update', {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-          'content-type': 'application/json',
-        },
-      })
-        .then(res => res.json())
-        .then(res => {
-          if (res.statusCode >= 0 && res.statusCode <= 500) {
-            alert(res.message);
-          } else {
-            onCellUpdate(x, y, res.color);
-          }
+    const handleOnDoubleClick = () => {
+      if (address) {
+        setSelectedCell({
+          x,
+          y,
         });
+      } else {
+        alert('Please connect to a wallet');
+      }
     };
 
     return (
       <div
         className={clsx(
-          'flex gap-[4px] min-h-[1rem] min-w-[1rem] w-4 h-4 border border-black',
+          'flex justify-center items-center',
+          'gap-[4px] min-h-[1rem] min-w-[1rem] w-4 h-4 border border-black cursor-pointer',
         )}
         style={{
           backgroundColor: color,
         }}
-        onDoubleClick={() => handleOnDoubleClick()}
+        role="presentation"
+        onClick={() => handleOnDoubleClick()}
       >
-        &nbsp;
+        <span className="text-white text-sm">{symbol}</span>
       </div>
     );
   },

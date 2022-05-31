@@ -5,7 +5,7 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
   const {body} = _req;
 
   try {
-    const {coordinate, color, address} = body;
+    const {coordinate, color, address, comment, symbol} = body;
 
     if (!coordinate || !color || !address) {
       return res
@@ -22,16 +22,16 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
     if (cell) {
       const {data} = await supabase
         .from('blvckboard')
-        .update({color, updated_by: address})
-        .select('coordinate,color')
+        .update({color, comment, symbol, owner: address})
+        .select('coordinate,color,symbol')
         .eq('coordinate', coordinate)
         .single();
       return res.status(200).json(data);
     } else {
       const {data, error} = await supabase
         .from('blvckboard')
-        .insert({coordinate, color, updated_by: address})
-        .select('coordinate,color')
+        .insert({coordinate, color, comment, symbol, owner: address})
+        .select('coordinate,color,symbol')
         .single();
       return res.status(200).json(data);
     }

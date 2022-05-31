@@ -12,15 +12,19 @@
     "@supabase/supabase-js": "^1.35.3",
     "clsx": "^1.1.1",
     "ethers": "^5.6.8",
+    "formik": "^2.2.9",
     "next": "12.1.6",
     "react": "18.1.0",
+    "react-color": "^2.19.3",
     "react-dom": "18.1.0",
-    "web3modal": "^1.9.7"
+    "web3modal": "^1.9.7",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "3.2.0",
     "@types/node": "17.0.36",
     "@types/react": "18.0.9",
+    "@types/react-color": "^3.0.6",
     "autoprefixer": "10.4.7",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "8.16.0",
