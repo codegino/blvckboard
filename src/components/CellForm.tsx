@@ -89,31 +89,45 @@ const CellForm = ({onCellUpdate}) => {
         backgroundColor: '#00000089',
       }}
     >
-      <div className="px-4 bg-white p-4">
+      <div className="px-4 bg-white p-4 rounded-sm">
+        <div className="flex justify-between border-b border-gray-600 pb-2 mb-4">
+          <h2 className="text-2xl">
+            {cellInfo?.owner === address ? 'Edit Cell' : 'Claim Cell'}
+          </h2>
+          <h3 className="text-xl">
+            Block#: {x}:{y}
+          </h3>
+        </div>
         {cellInfo && (
           <div className="mb-4">
-            <p>Owner: {cellInfo.owner === address ? 'You' : cellInfo.owner}</p>
+            <p>
+              Owner: {cellInfo.owner === address ? <b>You</b> : cellInfo.owner}
+            </p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-y-2">
-          <div>
-            <label htmlFor="comment">Comment:&nbsp;</label>
+          <div className="flex justify-between">
+            <label htmlFor="comment" className="min-w-[5rem]">
+              Message:&nbsp;
+            </label>
 
             <input
               id="comment"
-              className="border border-gray-500 px-4 rounded-sm"
-              placeholder="Any text"
+              className="border border-gray-500 px-4 rounded-sm w-full"
+              placeholder="Leave a message"
               value={comment}
               onChange={e => setComment(e.target.value)}
             />
           </div>
-          <div>
-            <label htmlFor="symbol">Symbol:&nbsp;</label>
+          <div className="flex justify-between">
+            <label htmlFor="symbol" className="min-w-[5rem]">
+              Symbol:&nbsp;
+            </label>
 
             <input
               id="symbol"
-              className="border border-gray-500 px-2 rounded-sm"
+              className="border border-gray-500 px-2 rounded-sm w-full"
               placeholder="1-character symbol"
               value={symbol}
               maxLength={1}

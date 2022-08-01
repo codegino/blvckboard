@@ -175,7 +175,7 @@ const IndexPage = () => {
       }}
     >
       <Layout title="The Blvckboard">
-        <main className="flex flex-col items-center">
+        <main className="flex flex-col items-center overflow-hidden">
           <h1 className="text-3xl font-bold underline text-center my-4">
             Welcome to the Blvck Board
           </h1>
@@ -195,12 +195,14 @@ const IndexPage = () => {
           <h2>Click on a cell to view/modify content</h2>
 
           {!walletConnected && (
-            <button onClick={connectWallet}>Connect Wallet</button>
+            <button onClick={connectWallet} className="underline">
+              Connect Wallet
+            </button>
           )}
 
           <div
             className={
-              'flex flex-col bg-[#323232] box-border border-4 border-gray-600 mt-4'
+              'flex flex-col bg-[#323232] box-border border-4 border-gray-600 mt-4 w-full overflow-auto max-w-[100rem]'
             }
           >
             {board.map((row, y) => (
