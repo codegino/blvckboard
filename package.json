@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^1.35.3",
-    "clsx": "^1.1.1",
+    "clsx": "^1.2.1",
     "ethers": "^5.6.8",
     "formik": "^2.2.9",
     "next": "12.1.6",
