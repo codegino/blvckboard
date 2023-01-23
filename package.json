@@ -28,7 +28,7 @@
     "autoprefixer": "10.4.13",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "8.26.0",
-    "eslint-config-next": "12.1.6",
+    "eslint-config-next": "13.1.4",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-jsx-a11y": "6.6.1",
     "husky": "8.0.1",
